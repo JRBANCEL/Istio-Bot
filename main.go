@@ -6,12 +6,20 @@ import (
 	"github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"time"
 )
 
 func main() {
+	http.HandleFunc("/", handler)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), nil); err != nil {
+		log.Fatalf("Failed to listen and serve: %v", err)
+	}
+}
+
+func handler(_ http.ResponseWriter, _ *http.Request) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
